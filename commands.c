@@ -581,6 +581,9 @@ static struct mobile_packet *command_data(struct mobile_adapter *adapter, struct
 {
     struct mobile_adapter_commands *s = &adapter->commands;
     struct mobile_buffer_commands *b = &adapter->buffer.commands;
+    unsigned maximum_wanted_size = MOBILE_MAX_TRANSFER_SIZE;
+    if(adapter->serial.mode_32bit)
+        maximum_wanted_size = MOBILE_MAX_TRANSFER_SIZE_32_BITS;
 
     if (s->state != MOBILE_CONNECTION_CALL &&
             s->state != MOBILE_CONNECTION_CALL_RECV &&
@@ -637,7 +640,7 @@ static struct mobile_packet *command_data(struct mobile_adapter *adapter, struct
     int recv_size = 0;
     if (internet || s->call_packets_sent) {
         recv_size = mobile_cb_sock_recv(adapter, conn, data,
-            MOBILE_MAX_TRANSFER_SIZE, NULL);
+            maximum_wanted_size, NULL);
     }
 
     if (!internet && recv_size > 0) {
